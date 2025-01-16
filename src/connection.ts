@@ -1,4 +1,4 @@
-import { SongInfo, SMsg, SMsgEnqueue, SMsgVolume, SMsgQueueChange, SMSG_KEY, SMsgSkip, CMSG_KEY, CMsg, SMsgReqSync, SMsgNext, PlayState, SMsgPlayState } from "./connection_types";
+import { SongInfo, SMsg, SMsgEnqueue, SMsgVolume, SMsgQueueChange, SMSG_KEY, SMsgSkip, CMSG_KEY, CMsg, SMsgReqSync, SMsgNext, PlayState, SMsgPlayState, SMsgPing } from "./connection_types";
 import { WebSocket } from "ws"
 import { is_arr, is_bool, is_dict, is_in_union, is_literal, is_number, is_str, is_tuple, try_parse_json } from "./json";
 import { Player } from "./player";
@@ -29,9 +29,10 @@ const is_msg_next = is_tuple<SMsgNext>([is_literal(SMSG_KEY.NEXT), is_number])
 const is_msg_playstate = is_tuple<SMsgPlayState>([is_literal(SMSG_KEY.PLAY_STATE), is_PlayState])
 const is_msg_volume = is_tuple<SMsgVolume>([is_literal(SMSG_KEY.VOLUME), is_number])
 const is_msg_queue_change = is_tuple<SMsgQueueChange>([is_literal(SMSG_KEY.QUEUE_CHANGE), is_arr(is_str)])
-const is_msg_req_syc = is_tuple<SMsgReqSync>([is_literal(SMSG_KEY.REQ_SYNC)])
+const is_msg_req_sync = is_tuple<SMsgReqSync>([is_literal(SMSG_KEY.REQ_SYNC)])
+const is_msg_ping = is_tuple<SMsgPing>([is_literal(SMSG_KEY.PING), is_number])
 const is_msg = is_in_union<SMsg>(
-    [is_msg_video_change, is_msg_skip, is_msg_next, is_msg_playstate, is_msg_volume, is_msg_queue_change, is_msg_req_syc]
+    [is_msg_video_change, is_msg_skip, is_msg_next, is_msg_playstate, is_msg_volume, is_msg_queue_change, is_msg_req_sync, is_msg_ping]
 )
 
 export class Connection {
@@ -63,6 +64,10 @@ export class Connection {
             case SMSG_KEY.REQ_SYNC:
                 this.player.sync_connection(this)
                 break
+            case SMSG_KEY.PING: {
+                this.send([CMSG_KEY.PING, data[1], Date.now()])
+                break
+            }
         }
     }
 
