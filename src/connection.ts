@@ -16,10 +16,12 @@ const is_PlayState = is_in_union<PlayState>([
     is_dict({
         playing: is_literal<true>(true),
         time_start: is_number,
+        rate: is_number,
     }),
     is_dict({
         playing: is_literal<false>(false),
         time_at: is_number,
+        rate: is_number,
     }),
 ]) as (v: unknown) => v is PlayState
 

@@ -9,9 +9,11 @@ export interface SongInfo {
 export type PlayState = {
     playing: true,
     time_start: number,
+    rate: number,
 } | {
     playing: false,
     time_at: number,
+    rate: number,
 }
 
 export const CMSG_KEY = {

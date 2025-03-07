@@ -7,7 +7,7 @@ export class Player {
     readonly queue: string[] = []
     current_song: string | null = null
     current_song_discriminator: number = 0
-    playstate: PlayState = { playing: false, time_at: 0 }
+    playstate: PlayState = { playing: false, time_at: 0, rate: 1 }
     volume: number = 1.0
 
     async req_enqueue(song_id: string) {
@@ -95,9 +95,9 @@ export class Player {
             v.send_queue_change(this.queue)
         })
         this.set_playstate(this.playstate.playing ? {
-            playing: true, time_start: Date.now(),
+            playing: true, time_start: Date.now(), rate: this.playstate.rate,
         } : {
-            playing: false, time_at: 0,
+            playing: false, time_at: 0, rate: this.playstate.rate,
         })
     }
 
